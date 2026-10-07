@@ -1,0 +1,72 @@
+name: Versión online (Netlify)
+
+on:
+  push:
+    paths: ["online/**", ".github/workflows/online.yml"]
+  workflow_dispatch:
+    inputs:
+      site_id:
+        description: "ID del proyecto en Netlify"
+        required: true
+      proxy_path:
+        description: "Credencial temporal de publicación (del conector de Netlify)"
+        required: true
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: online
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: gd
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: |
+          npm ci || npm install
+          pip install playwright==1.63.0 pytest
+          python -m playwright install --with-deps chromium
+          echo "CHROMIUM=$(python -c 'from playwright.sync_api import sync_playwright as s; p=s().start(); print(p.chromium.executable_path); p.stop()')" >> "$GITHUB_ENV"
+
+      - name: Pruebas unitarias
+        run: npm test
+
+      - name: Pruebas de punta a punta
+        run: python -m pytest -v tests/e2e_test.py
+
+  publicar:
+    needs: pruebas
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # La credencial se lee del evento (no del script) para que nunca aparezca en los registros
+      - name: Ocultar credencial
+        run: |
+          PROXY=$(jq -r '.inputs.proxy_path' "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$PROXY"
+          echo "NETLIFY_PROXY=$PROXY" >> "$GITHUB_ENV"
+
+      - name: Publicar en Netlify
+        working-directory: online
+        env:
+          SITE_ID: ${{ inputs.site_id }}
+        run: npx -y @netlify/mcp@latest --site-id "$SITE_ID" --proxy-path "$NETLIFY_PROXY"

@@ -6,7 +6,7 @@ Hay dos versiones:
 
 | Versión | Carpeta | Para qué |
 |---|---|---|
-| **Web (PHP, MVC, POO)** ⭐ | [`web/`](web/README.md) | Se instala en un hosting. Funciona desde cualquier PC con el botón del navegador, y con los 3 sitios. |
+| **Online (Netlify)** ⭐ | [`online/`](online/README.md) | Publicada con un link para compartir. No requiere instalar nada salvo el botón del navegador. |
+| Web (PHP, MVC, POO) | [`web/`](web/README.md) | La misma app para instalar en un hosting propio con PHP. |
 | Escritorio (Windows) | [`escritorio/`](escritorio/README.md) | Programa `.exe` que abre Edge en el PC. Queda como respaldo. |
 
-Las instrucciones de instalación de la versión web están en [`web/README.md`](web/README.md).

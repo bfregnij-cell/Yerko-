@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Extractor de Autos</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="/">🚗 Extractor de Autos</a>
+    <nav><a href="/instalar.html">Instalar botón</a><a href="/plantilla.html">Plantilla</a></nav>
+  </header>
+  <main class="contenedor">
+    <div id="error" class="alerta alerta-error" hidden></div>
+
+    <section class="tarjeta destacada">
+      <h2>⭐ Opción recomendada: el botón del navegador</h2>
+      <p>Funciona con <strong>BE FORWARD, Copart e IAAI</strong>. Abres la página del auto como siempre y aprietas
+        el botón <strong>“Extraer auto”</strong> en tu barra de favoritos.</p>
+      <a class="boton" href="/instalar.html">Instalar el botón (una sola vez)</a>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Pegar el link</h2>
+      <p class="nota">Funciona bien con BE FORWARD. Copart e IAAI suelen bloquear al servidor: para ellos usa el botón.</p>
+      <form id="form-link" class="fila">
+        <input type="url" name="url" required placeholder="https://www.beforward.jp/…">
+        <button class="boton" type="submit">Extraer</button>
+      </form>
+    </section>
+
+    <details class="tarjeta">
+      <summary>Pegar datos del botón (si el sitio no dejó enviarlos)</summary>
+      <form method="post" action="/api/recibir" enctype="multipart/form-data">
+        <textarea name="datos" rows="5" required placeholder="Pega aquí el texto que copió el botón"></textarea>
+        <button class="boton" type="submit">Procesar</button>
+      </form>
+    </details>
+  </main>
+  <script type="module">
+    const error = new URLSearchParams(location.search).get("error");
+    if (error) {
+      const el = document.querySelector("#error");
+      el.textContent = error;
+      el.hidden = false;
+    }
+    document.querySelector("#form-link").addEventListener("submit", (e) => {
+      e.preventDefault();
+      location.href = "/resultado.html?link=" + encodeURIComponent(e.target.url.value.trim());
+    });
+  </script>
+</body>
+</html>

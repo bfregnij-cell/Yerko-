@@ -1,0 +1,11 @@
+{
+  "name": "extractor-autos-online",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/unidad.test.mjs"
+  },
+  "dependencies": {
+    "@netlify/blobs": "11.1.0"
+  }
+}

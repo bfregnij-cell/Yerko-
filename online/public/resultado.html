@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Resultado · Extractor de Autos</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+  <script src="/vendor/jszip.min.js"></script>
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="/">🚗 Extractor de Autos</a>
+    <nav><a href="/instalar.html">Instalar botón</a><a href="/plantilla.html">Plantilla</a></nav>
+  </header>
+  <main class="contenedor">
+    <section id="cargando" class="tarjeta centrado">
+      <div class="spinner" aria-hidden="true"></div>
+      <h2 id="cargando-texto">Procesando…</h2>
+      <p class="nota">No cierres esta página.</p>
+    </section>
+
+    <section id="fallo" class="tarjeta" hidden>
+      <h2>No se pudo completar</h2>
+      <p id="fallo-mensaje" class="alerta alerta-error"></p>
+      <div id="fallo-bloqueo" hidden>
+        <p>Este sitio no deja que el servidor lea sus páginas. Usa el <strong>botón “Extraer auto”</strong> de tu barra
+          de favoritos estando en la página del auto.</p>
+        <a class="boton" href="/instalar.html">Instalar el botón</a>
+      </div>
+      <p><a href="/">← Volver</a></p>
+    </section>
+
+    <div id="resultado" hidden>
+      <h1 id="titulo"></h1>
+      <p class="nota"><span id="fuente"></span> ·
+        <a id="original" target="_blank" rel="noopener noreferrer">ver página original</a></p>
+
+      <div class="columnas">
+        <section class="tarjeta">
+          <h2>Texto para publicar</h2>
+          <textarea id="texto" rows="18"></textarea>
+          <div class="fila">
+            <button class="boton" type="button" data-copiar="#texto">📋 Copiar texto</button>
+            <a class="boton secundario" href="/">Nuevo auto</a>
+          </div>
+          <p class="nota">Puedes corregir el texto aquí antes de copiarlo.</p>
+        </section>
+
+        <section class="tarjeta">
+          <h2>Fotos (<span id="cantidad">…</span>)</h2>
+          <p id="estado-fotos" class="nota"></p>
+          <button id="zip" class="boton" type="button" hidden>⬇️ Descargar todas (ZIP)</button>
+          <div id="galeria" class="galeria"></div>
+          <details id="remotas" hidden>
+            <summary><span id="remotas-cantidad"></span> fotos no se pudieron descargar desde el servidor</summary>
+            <p class="nota">Ábrelas y guárdalas con clic derecho → “Guardar imagen como…”.</p>
+            <div id="galeria-remota" class="galeria galeria-remota"></div>
+          </details>
+        </section>
+      </div>
+
+      <details class="tarjeta">
+        <summary>Datos detectados (para revisar)</summary>
+        <table id="tabla-datos" class="tabla"></table>
+        <h3>Todo lo que se leyó en la página</h3>
+        <table id="tabla-pares" class="tabla"></table>
+      </details>
+    </div>
+  </main>
+  <script type="module">
+    import { ResultadoController } from "/js/controladores/ResultadoController.js";
+    import { activarBotonesCopiar } from "/js/controladores/comunes.js";
+    const controlador = new ResultadoController();
+    document.querySelector("#zip").addEventListener("click", () => controlador.descargarZip());
+    activarBotonesCopiar();
+    controlador.iniciar();
+  </script>
+</body>
+</html>

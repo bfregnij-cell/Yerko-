@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Plantilla · Extractor de Autos</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="/">🚗 Extractor de Autos</a>
+    <nav><a href="/instalar.html">Instalar botón</a><a href="/plantilla.html">Plantilla</a></nav>
+  </header>
+  <main class="contenedor">
+    <h1>Plantilla del texto</h1>
+    <div id="aviso" class="alerta alerta-ok" hidden></div>
+    <div class="columnas">
+      <section class="tarjeta">
+        <textarea id="plantilla" rows="22"></textarea>
+        <div class="fila">
+          <button id="guardar" class="boton" type="button">Guardar</button>
+          <button id="restaurar" class="boton secundario" type="button">Restaurar original</button>
+        </div>
+        <p class="nota">La plantilla se guarda en este navegador.</p>
+      </section>
+      <section class="tarjeta">
+        <h2>Cómo funciona</h2>
+        <ul>
+          <li>Cada <code>{campo}</code> se reemplaza por el dato del auto.</li>
+          <li>Si un dato no existe, <strong>esa línea completa se omite</strong>.</li>
+          <li>Puedes cambiar emojis, el orden o agregar tu teléfono y precio.</li>
+        </ul>
+        <p>Campos disponibles:</p>
+        <p id="campos" class="campos"></p>
+        <h2>Vista previa (auto de ejemplo)</h2>
+        <pre id="previa" class="previa"></pre>
+      </section>
+    </div>
+  </main>
+  <script type="module">
+    import { PlantillaController } from "/js/controladores/PlantillaController.js";
+    new PlantillaController().iniciar();
+  </script>
+</body>
+</html>

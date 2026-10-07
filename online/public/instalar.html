@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Instalar botón · Extractor de Autos</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="/">🚗 Extractor de Autos</a>
+    <nav><a href="/instalar.html">Instalar botón</a><a href="/plantilla.html">Plantilla</a></nav>
+  </header>
+  <main class="contenedor">
+    <section class="tarjeta">
+      <h1>Instalar el botón “Extraer auto”</h1>
+      <p>Se instala <strong>una sola vez</strong> en el computador (Chrome, Edge o Firefox).</p>
+      <ol class="pasos">
+        <li>Muestra la barra de favoritos: presiona <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>
+          (en Mac: <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>).</li>
+        <li><strong>Arrastra</strong> este botón verde hasta la barra de favoritos:
+          <p class="centrado"><a id="marcador" class="boton marcador" href="#">🚗 Extraer auto</a></p>
+        </li>
+        <li>Listo. Cuando estés en la página de un auto en <strong>BE FORWARD, Copart o IAAI</strong>, espera que
+          cargue y aprieta <strong>“Extraer auto”</strong> en la barra de favoritos.</li>
+      </ol>
+      <details>
+        <summary>¿No puedes arrastrarlo?</summary>
+        <ol>
+          <li>Copia el código de abajo.</li>
+          <li>Clic derecho en la barra de favoritos → “Agregar página…”.</li>
+          <li>Nombre: <em>Extraer auto</em>. En “URL” pega el código. Guarda.</li>
+        </ol>
+        <textarea id="codigo-marcador" rows="4" readonly></textarea>
+        <button class="boton secundario" type="button" data-copiar="#codigo-marcador">Copiar código</button>
+      </details>
+    </section>
+  </main>
+  <script type="module">
+    import { InstalarController } from "/js/controladores/InstalarController.js";
+    import { activarBotonesCopiar } from "/js/controladores/comunes.js";
+    activarBotonesCopiar();
+    new InstalarController().iniciar();
+  </script>
+</body>
+</html>
