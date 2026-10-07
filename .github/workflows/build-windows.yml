@@ -1,0 +1,46 @@
+name: Compilar para Windows
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest pyinstaller
+
+      - name: Pruebas (usa el Microsoft Edge del equipo)
+        run: python -m pytest -v tests
+
+      - name: Verificar que la ventana carga
+        run: python -c "import app; print('ok')"
+
+      - name: Crear plantilla por defecto
+        run: python -c "from extractor.formatter import PLANTILLA_POR_DEFECTO as P; open('plantilla.txt','w',encoding='utf-8').write(P)"
+
+      - name: Compilar ejecutable
+        run: >
+          pyinstaller app.py --noconfirm --windowed --name ExtractorAutos
+          --collect-all playwright
+
+      - name: Empaquetar
+        shell: pwsh
+        run: |
+          Copy-Item plantilla.txt dist/ExtractorAutos/
+          Copy-Item LEEME.txt dist/ExtractorAutos/
+          Compress-Archive -Path dist/ExtractorAutos -DestinationPath ExtractorAutos-Windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ExtractorAutos-Windows
+          path: ExtractorAutos-Windows.zip

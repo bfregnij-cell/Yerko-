@@ -1,0 +1,35 @@
+EXTRACTOR DE AUTOS
+==================
+
+CÓMO USARLO
+1. Abre "ExtractorAutos.exe".
+2. Copia el link del auto (BE FORWARD, Copart o IAAI) y presiona "Pegar".
+3. Presiona "Extraer". Se abrirá una ventana del navegador: NO la cierres,
+   se cierra sola al terminar (normalmente 15 a 40 segundos).
+4. Si aparece una verificación anti-robots ("Pardon Our Interruption",
+   un captcha, etc.), resuélvela en esa ventana. Tienes 2 minutos.
+5. Al terminar:
+   - "Copiar texto" copia la publicación lista para Facebook / Marketplace.
+   - "Abrir carpeta de fotos" abre la carpeta con todas las fotos.
+
+Las fotos quedan en: Documentos\Autos extraidos\<nombre del auto>\
+Cada carpeta incluye también "publicacion.txt" con el texto.
+
+REQUISITOS
+- Windows 10 u 11 con Microsoft Edge (viene instalado) o Google Chrome.
+
+PERSONALIZAR EL TEXTO
+Presiona "Editar plantilla" (o abre plantilla.txt junto al programa).
+- Cada {campo} se reemplaza por el dato del auto.
+- Si un dato no existe, esa línea se omite sola.
+- Puedes cambiar emojis, el orden, y agregar tu teléfono o precio.
+
+Campos disponibles:
+{titulo} {marca} {modelo} {anio} {version} {kilometraje} {motor} {cilindros}
+{transmision} {traccion} {combustible} {color} {carroceria} {puertas} {asientos}
+{llaves} {estado} {danio_principal} {danio_secundario} {vin} {documento}
+{ubicacion} {precio} {referencia} {fuente} {link}
+
+SI WINDOWS MUESTRA "Windows protegió su PC"
+Es porque el programa no tiene firma digital de pago. Presiona
+"Más información" -> "Ejecutar de todas formas".
