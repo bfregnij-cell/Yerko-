@@ -1,0 +1,26 @@
+name: Diagnóstico de página real
+
+on:
+  workflow_dispatch:
+    inputs:
+      sitio:
+        description: "beforward, copart o iaai"
+        default: "beforward"
+
+jobs:
+  diagnostico:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: online
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install playwright==1.63.0
+          python -m playwright install --with-deps chromium
+      - env:
+          SITIO: ${{ inputs.sitio }}
+        run: xvfb-run -a python tests/diagnostico.py
