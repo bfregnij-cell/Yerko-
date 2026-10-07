@@ -2,7 +2,7 @@
 
 Pegas un auto de **BE FORWARD, Copart o IAAI** y obtienes **todas sus fotos** y un **texto con la ficha técnica** listo para Facebook o Marketplace. No usa IA: todo funciona con reglas programadas.
 
-Hay dos versiones:
+Hay tres versiones:
 
 | Versión | Carpeta | Para qué |
 |---|---|---|
