@@ -1,0 +1,37 @@
+name: Verificar con sitios reales
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "Dirección del sitio publicado"
+        default: "https://extractor-autos.netlify.app"
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: online
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar navegador
+        run: |
+          pip install playwright==1.63.0
+          python -m playwright install --with-deps chromium
+
+      - name: Verificar BE FORWARD, Copart e IAAI
+        env:
+          APP: ${{ inputs.app }}
+        run: xvfb-run -a python tests/verificar_real.py
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verificacion
+          path: online/verificacion/
