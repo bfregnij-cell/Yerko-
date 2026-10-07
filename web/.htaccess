@@ -1,0 +1,18 @@
+# Bloquea el acceso directo a todo excepto index.php y assets/
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(src|vistas|almacen|tests)(/|$) - [F,L]
+  RewriteRule ^config\.php$ - [F,L]
+</IfModule>
+
+<FilesMatch "^(config\.php|README\.md|LEEME\.txt)$">
+  Require all denied
+</FilesMatch>
+
+# Límites para recibir los datos del botón y descargar fotos
+<IfModule mod_php.c>
+  php_value post_max_size 16M
+  php_value max_execution_time 300
+</IfModule>

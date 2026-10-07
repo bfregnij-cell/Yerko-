@@ -2,7 +2,12 @@ name: Compilar para Windows
 
 on:
   push:
+    paths: ["escritorio/**", ".github/workflows/build-windows.yml"]
   workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: escritorio
 
 jobs:
   windows:
@@ -43,4 +48,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ExtractorAutos-Windows
-          path: ExtractorAutos-Windows.zip
+          path: escritorio/ExtractorAutos-Windows.zip

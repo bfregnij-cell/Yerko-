@@ -1,0 +1,43 @@
+name: Pruebas versión web (PHP)
+
+on:
+  push:
+    paths: ["web/**", ".github/workflows/web.yml"]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: web
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ["8.1", "8.3"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, dom, mbstring, zip, gd
+
+      - name: Revisar sintaxis
+        run: find . -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      - name: Pruebas unitarias
+        run: php tests/unidad.php
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar navegador de pruebas
+        run: |
+          pip install playwright==1.63.0 pytest
+          python -m playwright install --with-deps chromium
+          echo "CHROMIUM=$(python -c 'from playwright.sync_api import sync_playwright as s; p=s().start(); print(p.chromium.executable_path); p.stop()')" >> "$GITHUB_ENV"
+
+      - name: Pruebas de punta a punta
+        run: python -m pytest -v tests/e2e_test.py
