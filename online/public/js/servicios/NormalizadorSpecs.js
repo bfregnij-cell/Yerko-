@@ -14,15 +14,16 @@ const SINONIMOS = {
   marca: ["make", "marca", "maker", "manufacturer"],
   modelo: ["model", "modelo"],
   anio: ["year", "model year", "ano", "registration year", "registration year/month",
-    "manufacture year", "manufacture year/month", "reg. year", "reg year", "registrationyear/month"],
-  version: ["series", "trim", "grade", "version", "sub model", "version/class"],
+    "manufacture year", "manufacture year/month", "reg. year", "reg year", "registrationyear/month",
+    "registro ano/mes", "registroano/mes", "manufactura ano/mes"],
+  version: ["series", "trim", "grade", "version", "sub model", "version/class", "version/clase"],
   kilometraje: ["mileage", "odometer", "kilometraje", "km", "odometer reading", "odo"],
-  motor: ["engine", "engine type", "engine size", "engine capacity", "displacement", "motor", "cc"],
+  motor: ["engine", "engine type", "engine size", "engine capacity", "displacement", "motor", "cc", "tamano del motor", "cilindrada"],
   cilindros: ["cylinders", "cylinder", "cilindros"],
   transmision: ["transmission", "trans", "transmision", "gearbox"],
   traccion: ["drive", "drive type", "drivetrain", "drive line type", "drive line", "traccion", "drive train"],
   combustible: ["fuel", "fuel type", "combustible"],
-  color: ["color", "colour", "exterior color", "ext color", "exterior colour", "ext. color"],
+  color: ["color", "colour", "exterior color", "ext color", "exterior colour", "ext. color", "color ext", "color exterior"],
   carroceria: ["body style", "body type", "body", "carroceria", "type"],
   puertas: ["doors", "door", "puertas"],
   asientos: ["seats", "seating capacity", "asientos", "seating"],
@@ -30,12 +31,13 @@ const SINONIMOS = {
   estado: ["highlights", "start code", "run & drive", "run and drive", "condition", "vehicle condition"],
   danio_principal: ["primary damage", "damage", "loss", "dano principal"],
   danio_secundario: ["secondary damage", "dano secundario"],
-  vin: ["vin", "vin (status)", "chassis no.", "chassis no", "chassis number", "chassis", "vin #"],
+  vin: ["vin", "vin (status)", "chassis no.", "chassis no", "chassis number", "chassis", "vin #", "# chasis", "chasis",
+    "numero de chasis", "n° chasis"],
   documento: ["title code", "doc type", "title/sale doc", "title state/type", "sale document", "title"],
-  ubicacion: ["location", "sale location", "selling branch", "yard", "branch"],
+  ubicacion: ["location", "sale location", "selling branch", "yard", "branch", "localizacion", "ubicacion"],
   precio: ["price", "fob price", "total price", "vehicle price", "buy it now", "buy now price"],
   referencia: ["lot number", "lot #", "lot", "stock #", "stock", "ref no.", "ref no", "stock no.",
-    "stock no", "item #", "item number", "stock number"],
+    "stock no", "item #", "item number", "stock number", "no ref", "no. ref", "n° ref"],
 };
 
 const TRADUCCIONES = {
@@ -97,7 +99,7 @@ const TRADUCCIONES = {
 };
 
 const SIN_TRADUCIR = new Set(["vin", "referencia", "precio", "ubicacion", "documento"]);
-const VACIOS = new Set(["-", "n/a", "na", "null", "none", "--", "ask"]);
+const VACIOS = new Set(["-", "n/a", "na", "null", "none", "--", "ask", "preguntar"]);
 
 const miles = (n) => n.toLocaleString("de-DE"); // 123.456
 const numero = (t) => {

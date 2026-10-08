@@ -89,6 +89,15 @@ def main():
         r = page.request.get(f"{APP}/api/captura?id=invalido")
         log("Sitio publicado OK. /api/captura con id inválido ->", r.status)
 
+        # Resultados ya guardados (ej. el que reportó un usuario)
+        for rid in [x for x in os.environ.get("IDS", "").split(",") if x.strip()]:
+            log(f"\n===== resultado guardado {rid} =====")
+            pag = ctx.new_page()
+            pag.goto(f"{APP}/resultado.html?id={rid.strip()}")
+            r = leer_resultado(pag, f"id_{rid.strip()}_boton")
+            informe[f"id_{rid.strip()}"] = {"boton": r}
+            log(json.dumps({k: v for k, v in r.items() if k != "datos"}, ensure_ascii=False)[:2500])
+
         for nombre, (portada, patron) in SITIOS.items():
             log(f"\n===== {nombre} =====")
             res = informe.setdefault(nombre, {})

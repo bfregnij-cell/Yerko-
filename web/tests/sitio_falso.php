@@ -17,7 +17,8 @@ if (isset($imagenes[$ruta])) {
     [$w, $h, $rgb] = $imagenes[$ruta];
     $im = imagecreatetruecolor($w, $h);
     imagefill($im, 0, 0, imagecolorallocate($im, ...$rgb));
-    header('Content-Type: image/jpeg');
+    // 02.jpg se entrega sin tipo de imagen, como hace el CDN de BE FORWARD
+    header('Content-Type: ' . ($ruta === '/fotos/auto/02.jpg' ? 'binary/octet-stream' : 'image/jpeg'));
     imagejpeg($im);
     return;
 }

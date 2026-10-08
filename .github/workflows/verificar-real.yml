@@ -6,6 +6,9 @@ on:
       app:
         description: "Dirección del sitio publicado"
         default: "https://extractor-autos.netlify.app"
+      ids:
+        description: "ids de resultados guardados a revisar (separados por coma)"
+        default: ""
 
 jobs:
   verificar:
@@ -28,6 +31,7 @@ jobs:
       - name: Verificar BE FORWARD, Copart e IAAI
         env:
           APP: ${{ inputs.app }}
+          IDS: ${{ inputs.ids }}
         run: xvfb-run -a python tests/verificar_real.py
 
       - uses: actions/upload-artifact@v4

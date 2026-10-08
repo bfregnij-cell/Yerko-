@@ -167,3 +167,27 @@ test("valores reales vistos en IAAI y BE FORWARD", () => {
   assert.equal(datos.titulo, "Mazda CX-5 2019");
   assert.equal(datos.version, "XD Proactive");
 });
+
+test("BE FORWARD en español", () => {
+  const d = n.normalizar(n.desdePares([
+    ["Kilometraje", "63,000 km"], ["Año", "2022/-"], ["# Chasis", "KF2P-505543"], ["Color Ext.", "Negro"],
+    ["Versión/Clase", "360BOSEHUDBSM"], ["Localización", "NAGOYA"], ["Puertas", "PREGUNTAR"],
+    ["Transmisión", "Automático"], ["Tamaño del motor", "2,200cc"], ["No Ref", "CF116428"],
+  ]));
+  assert.equal(d.kilometraje, "63.000 km");
+  assert.equal(d.anio, "2022");
+  assert.equal(d.vin, "KF2P-505543");
+  assert.equal(d.color, "Negro");
+  assert.equal(d.version, "360BOSEHUDBSM");
+  assert.equal(d.ubicacion, "NAGOYA");
+  assert.equal(d.motor, "2.200 cc");
+  assert.equal(d.referencia, "CF116428");
+  assert.equal(d.puertas, undefined);
+});
+
+test("reconoce fotos por su contenido aunque el sitio no diga que son imágenes", async () => {
+  const { tipoDeImagen } = await import("../netlify/functions/imagen.mjs");
+  assert.equal(tipoDeImagen(new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0])), "image/jpeg");
+  assert.equal(tipoDeImagen(new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0])), "image/png");
+  assert.equal(tipoDeImagen(new TextEncoder().encode("<html><body>no</body></html>")), null);
+});
