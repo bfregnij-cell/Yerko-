@@ -44,6 +44,15 @@ def leer_resultado(page, nombre):
     except Exception:
         pass
     page.screenshot(path=f"{SALIDA}/{nombre}_resultado.png", full_page=True)
+    if nombre.endswith("_boton"):
+        # Captura de lo que ve el usuario, en el registro (para revisarla sin descargar artefactos)
+        import base64, io
+        from PIL import Image
+        img = Image.open(io.BytesIO(page.screenshot())).convert("RGB")
+        img.thumbnail((1100, 1100))
+        b = io.BytesIO()
+        img.save(b, "JPEG", quality=60)
+        print(f"CAPTURA:{nombre}:{base64.b64encode(b.getvalue()).decode()}", flush=True)
     filas = page.eval_on_selector_all(
         "#tabla-datos tr", "rs => rs.map(r => [r.cells[0].textContent, r.cells[1] ? r.cells[1].textContent : ''])")
     pares = page.eval_on_selector_all("#tabla-pares tr", "rs => rs.length")

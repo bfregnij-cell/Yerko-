@@ -22,7 +22,7 @@ jobs:
 
       - name: Instalar navegador
         run: |
-          pip install playwright==1.63.0
+          pip install playwright==1.63.0 pillow
           python -m playwright install --with-deps chromium
 
       - name: Verificar BE FORWARD, Copart e IAAI
