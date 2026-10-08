@@ -47,7 +47,17 @@ def leer_resultado(page, nombre):
     filas = page.eval_on_selector_all(
         "#tabla-datos tr", "rs => rs.map(r => [r.cells[0].textContent, r.cells[1] ? r.cells[1].textContent : ''])")
     pares = page.eval_on_selector_all("#tabla-pares tr", "rs => rs.length")
+    zip_info = {"visible": page.is_visible("#zip")}
+    if zip_info["visible"]:
+        try:
+            with page.expect_download(timeout=120000) as d:
+                page.click("#zip")
+            ruta = d.value.path()
+            zip_info.update(nombre=d.value.suggested_filename, bytes=os.path.getsize(ruta))
+        except Exception as e:
+            zip_info["error"] = str(e)[:300]
     return {
+        "zip": zip_info,
         "ok": True,
         "fotos": page.inner_text("#cantidad"),
         "fotos_no_descargadas": page.inner_text("#remotas-cantidad") if page.is_visible("#remotas") else "0",
@@ -124,7 +134,7 @@ def main():
     log("\n===== RESUMEN =====")
     for nombre, res in informe.items():
         b, l = res.get("boton", {}), res.get("link", {})
-        log(f"{nombre}: botón={'OK ' + b.get('fotos', '?') + ' fotos' if b.get('ok') else b.get('error') or res.get('error') or res.get('excepcion')}"
+        log(f"{nombre}: botón={'OK ' + b.get('fotos', '?') + ' fotos, zip=' + json.dumps(b.get('zip')) if b.get('ok') else b.get('error') or res.get('error') or res.get('excepcion')}"
             f" | link={'OK ' + l.get('fotos', '?') + ' fotos' if l.get('ok') else l.get('error')}")
 
 
