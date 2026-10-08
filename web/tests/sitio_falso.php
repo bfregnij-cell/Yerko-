@@ -34,7 +34,9 @@ if ($ruta === '/auto') {
 <!doctype html><html><head><meta charset="utf-8"><title>2019 MAZDA CX-5 GRAND TOURING | Autos</title>
 <meta property="og:image" content="/fotos/auto/01.jpg"></head><body>
 <img src="/img/logo.jpg" alt="logo">
-<h1>2019 MAZDA CX-5 GRAND TOURING</h1>
+<h1>2019 MAZDA</h1>
+<table><tr><td>Mileage</td><td>Year</td><td>Engine</td><td>Trans.</td></tr>
+  <tr><td> 32,000 km </td><td> 2019/2 </td><td>2.5L 4</td><td> AT </td></tr></table>
 <div id="galeria">
   <img src="/fotos/auto/01.jpg">
   <img data-src="/fotos/auto/02.jpg" class="lazy">

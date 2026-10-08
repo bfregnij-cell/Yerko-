@@ -21,8 +21,8 @@ final class NormalizadorSpecs
         'marca' => ['make', 'marca', 'maker', 'manufacturer'],
         'modelo' => ['model', 'modelo'],
         'anio' => ['year', 'model year', 'ano', 'registration year', 'registration year/month',
-            'manufacture year', 'manufacture year/month', 'reg. year', 'reg year'],
-        'version' => ['series', 'trim', 'grade', 'version', 'sub model'],
+            'manufacture year', 'manufacture year/month', 'reg. year', 'reg year', 'registrationyear/month'],
+        'version' => ['series', 'trim', 'grade', 'version', 'sub model', 'version/class'],
         'kilometraje' => ['mileage', 'odometer', 'kilometraje', 'km', 'odometer reading', 'odo'],
         'motor' => ['engine', 'engine type', 'engine size', 'engine capacity', 'displacement', 'motor', 'cc'],
         'cilindros' => ['cylinders', 'cylinder', 'cilindros'],
@@ -48,6 +48,7 @@ final class NormalizadorSpecs
     private const TRADUCCIONES = [
         // transmisión
         'automatic' => 'Automática', 'auto' => 'Automática', 'at' => 'Automática', 'manual' => 'Manual',
+        'automatic transmission' => 'Automática', 'manual transmission' => 'Manual', 'cvt transmission' => 'Automática CVT',
         'mt' => 'Manual', 'cvt' => 'Automática CVT', 'semi-automatic' => 'Semiautomática',
         // combustible
         'gas' => 'Bencina', 'gasoline' => 'Bencina', 'petrol' => 'Bencina', 'diesel' => 'Diésel',
@@ -60,7 +61,8 @@ final class NormalizadorSpecs
         'rear-wheel drive' => 'Trasera (RWD)', 'rear wheel drive' => 'Trasera (RWD)', 'rwd' => 'Trasera (RWD)',
         'all wheel drive' => 'Integral (AWD)', 'all-wheel drive' => 'Integral (AWD)', 'awd' => 'Integral (AWD)',
         '4x4 w/front whl drv' => '4x4', '4x4 w/rear wheel drv' => '4x4', '4x4' => '4x4', '4wd' => '4x4',
-        'four by four' => '4x4',
+        'four by four' => '4x4', '4x4 drive' => '4x4', '4wd drive' => '4x4', 'awd drive' => 'Integral (AWD)',
+        'front wheel drive (fwd)' => 'Delantera (FWD)', 'rear wheel drive (rwd)' => 'Trasera (RWD)', 'all wheel drive (awd)' => 'Integral (AWD)',
         // colores
         'black' => 'Negro', 'white' => 'Blanco', 'silver' => 'Plateado', 'gray' => 'Gris', 'grey' => 'Gris',
         'red' => 'Rojo', 'blue' => 'Azul', 'green' => 'Verde', 'gold' => 'Dorado', 'beige' => 'Beige',
@@ -87,7 +89,7 @@ final class NormalizadorSpecs
         // estado
         'run and drive' => 'Arranca y anda', 'run & drive' => 'Arranca y anda', 'runs and drives' => 'Arranca y anda',
         'engine start program' => 'Motor enciende', 'starts' => 'Enciende', 'stationary' => 'Enciende (no se movió)',
-        "won't start" => 'No arranca', 'does not start' => 'No arranca', 'enhanced vehicles' => 'Vehículo mejorado',
+        "won't start" => 'No arranca', 'does not start' => 'No arranca',
         // carrocería
         'sedan 4d' => 'Sedán 4 puertas', 'sedan 2d' => 'Sedán 2 puertas', 'sedan' => 'Sedán',
         '4dr spor' => 'SUV', 'sport utility' => 'SUV', 'suv' => 'SUV', 'suv 4d' => 'SUV',
@@ -140,7 +142,7 @@ final class NormalizadorSpecs
         if (!preg_match('/\b((?:19|20)\d{2})\s+([A-Za-z][\w\-]*)\s+(.+)/u', $titulo, $m)) {
             return [];
         }
-        $resto = trim(explode(' - ', explode('|', $m[3])[0])[0]);
+        $resto = trim((preg_split('/\s+for sale\b|\||\s-\s/i', $m[3]) ?: [''])[0]);
         $palabras = preg_split('/\s+/', $resto, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         $datos = ['anio' => $m[1], 'marca' => $m[2]];
         if ($palabras) {
@@ -167,6 +169,9 @@ final class NormalizadorSpecs
                     break;
                 case 'motor':
                     $v = $this->formatearMotor($v);
+                    break;
+                case 'cilindros':
+                    $v = preg_match('/(\d+)\s*cyl/i', $v, $m) ? $m[1] : $v;
                     break;
                 case 'anio':
                     if (!preg_match('/(19|20)\d{2}/', $v, $m)) {
@@ -251,7 +256,12 @@ final class NormalizadorSpecs
 
     private function limpiarValor(string $v): string
     {
-        return trim((string) preg_replace('/\s+/u', ' ', $v), " :|\t\n\r");
+        $t = trim((string) preg_replace('/\s+/u', ' ', $v), " :|\t\n\r");
+        // "Present Present" (el sitio repite el dato para móvil y escritorio)
+        if (preg_match('/^(.+) \1$/u', $t, $m)) {
+            return $m[1];
+        }
+        return $t;
     }
 
     private function sinAcentos(string $t): string

@@ -61,7 +61,7 @@ abstract class Extractor
     {
         $crudo = [];
         // Prioridad: datos internos del sitio > tabla de la página > título
-        foreach ([$this->specsDesdeJson($c), $n->desdePares($c->pares), $n->desdeTitulo($c->tituloPagina())] as $fuente) {
+        foreach ([$this->specsDesdeJson($c), $n->desdePares($c->pares), $this->desdeTitulos($c, $n)] as $fuente) {
             foreach ($fuente as $campo => $valor) {
                 $crudo[$campo] ??= $valor;
             }
@@ -72,6 +72,23 @@ abstract class Extractor
         $datos['fuente'] = $this->nombre();
         $datos['link'] = $c->url;
         return $datos;
+    }
+
+    /** Prueba h1, og:title y <title>: usa el primero que trae marca y modelo. */
+    private function desdeTitulos(Captura $c, NormalizadorSpecs $n): array
+    {
+        $candidatos = array_map([$n, 'desdeTitulo'], [$c->h1, $c->ogTitulo, $c->titulo]);
+        foreach ($candidatos as $d) {
+            if (isset($d['modelo'])) {
+                return $d;
+            }
+        }
+        foreach ($candidatos as $d) {
+            if (isset($d['anio'])) {
+                return $d;
+            }
+        }
+        return [];
     }
 
     // ------------------------------------------------------------------ fotos
@@ -120,7 +137,7 @@ abstract class Extractor
 
     private function carpetaDe(string $url): string
     {
-        $p = parse_url($url);
+        $p = parse_url($this->altaResolucion($url));
         $ruta = $p['path'] ?? '';
         return ($p['host'] ?? '') . substr($ruta, 0, (int) strrpos($ruta, '/'));
     }

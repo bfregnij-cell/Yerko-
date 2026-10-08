@@ -1,13 +1,13 @@
 /*
  * Descarga la página de un auto desde el servidor: GET /api/pagina?u=<link>
- * Funciona con sitios sin anti-robots (BE FORWARD). Si el sitio bloquea,
+ * Sirve para sitios sin anti-robots (BE FORWARD, Copart e IAAI lo bloquean). Si el sitio bloquea,
  * responde { bloqueado: true } para que la interfaz sugiera usar el botón.
  */
 import { json, leerConLimite, obtener } from "../lib/red.mjs";
 
 const BLOQUEOS = [
   "pardon our interruption", "access denied", "incapsula", "request unsuccessful", "are you a robot",
-  "just a moment", "attention required", "verify you are human", "_incapsula_resource",
+  "just a moment", "javascript is disabled", "attention required", "verify you are human", "_incapsula_resource",
 ];
 
 export default async (req) => {

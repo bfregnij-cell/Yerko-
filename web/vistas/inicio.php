@@ -11,11 +11,11 @@
 </section>
 
 <section class="tarjeta">
-  <h2>Pegar el link</h2>
-  <p class="nota">Funciona bien con BE FORWARD. Copart e IAAI suelen bloquear al servidor: para ellos usa el botón.</p>
+  <h2>Pegar el link (otros sitios)</h2>
+  <p class="nota">Para BE FORWARD, Copart e IAAI usa el botón de arriba: esos sitios no dejan que el servidor lea sus páginas.</p>
   <form method="post" action="index.php?r=extraer" class="fila">
     <input type="hidden" name="csrf" value="<?= Vista::e($csrf) ?>">
-    <input type="url" name="url" required placeholder="https://www.beforward.jp/…" value="<?= Vista::e($linkPrevio) ?>">
+    <input type="url" name="url" required placeholder="https://…" value="<?= Vista::e($linkPrevio) ?>">
     <button class="boton" type="submit">Extraer</button>
   </form>
 </section>

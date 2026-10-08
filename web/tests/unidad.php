@@ -243,6 +243,23 @@ prueba('el botón se genera con el destino y el token', function () {
     contiene('javascript:', $m->enlace('https://x.cl/index.php', ''));
 });
 
+prueba('valores reales vistos en IAAI y BE FORWARD', function () use ($n) {
+    igual(
+        ['transmision' => 'Automática', 'traccion' => '4x4', 'cilindros' => '6', 'llaves' => 'Sí', 'estado' => 'Arranca y anda'],
+        $n->normalizar(['transmision' => 'Automatic Transmission', 'traccion' => '4X4 Drive', 'cilindros' => '6 Cylinders',
+            'llaves' => 'Present Present', 'estado' => 'Run & Drive Run & Drive'])
+    );
+    $c = new Captura(
+        url: 'https://www.beforward.jp/mazda/cx-5/ce451821/id/16337108/',
+        titulo: 'Used 2019 MAZDA CX-5 XD PROACTIVE/3DA-KF2P for Sale CE451821 - BE FORWARD',
+        h1: '2019 MAZDA',
+        pares: [['Version/Class', 'XD PROACTIVE'], ['Mileage', '68,803 km']],
+    );
+    $d = ExtractorFactory::paraUrl($c->url)->especificaciones($c, $n);
+    igual('Mazda CX-5 2019', $d['titulo']);
+    igual('XD Proactive', $d['version']);
+});
+
 prueba('el servidor no descarga desde redes internas', function () {
     foreach (['http://127.0.0.1/', 'http://localhost:8080/', 'http://192.168.1.1/', 'http://169.254.169.254/latest/meta-data/', 'file:///etc/passwd'] as $u) {
         try {

@@ -26,7 +26,21 @@
     a = (a || '').trim(); b = (b || '').trim();
     if (a && b && a.length <= 45 && b.length <= 200 && a !== b) pares.push([a, b]);
   };
+  /* Tablas con los títulos en una fila y los valores debajo (ej. BE FORWARD) */
+  var tablasColumnas = [];
+  document.querySelectorAll('table').forEach(function (t) {
+    var filas = Array.prototype.filter.call(t.rows, function (r) { return r.cells.length >= 2; });
+    if (filas.length < 2 || filas[0].cells.length < 3) return;
+    var enc = Array.prototype.map.call(filas[0].cells, function (c) { return txt(c); });
+    if (!enc.every(function (x) { return x && x.length <= 30 && !/\d/.test(x); })) return;
+    tablasColumnas.push(t);
+    for (var k = 1; k < filas.length; k++) {
+      if (filas[k].cells.length !== enc.length) continue;
+      for (var i = 0; i < enc.length; i++) add(enc[i], txt(filas[k].cells[i]));
+    }
+  });
   document.querySelectorAll('tr').forEach(function (tr) {
+    if (tablasColumnas.indexOf(tr.closest('table')) >= 0) return;
     var c = Array.prototype.filter.call(tr.children, function (x) { return x.tagName === 'TH' || x.tagName === 'TD'; });
     for (var i = 0; i + 1 < c.length; i += 2) add(txt(c[i]), txt(c[i + 1]));
   });

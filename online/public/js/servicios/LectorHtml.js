@@ -28,7 +28,21 @@ export class LectorHtml {
       b = (b || "").trim();
       if (a && b && a.length <= 45 && b.length <= 200 && a !== b) pares.push([a, b]);
     };
+    // Tablas con los títulos en una fila y los valores debajo (ej. BE FORWARD)
+    const tablasColumnas = new Set();
+    doc.querySelectorAll("table").forEach((t) => {
+      const filas = [...t.rows].filter((r) => r.cells.length >= 2);
+      if (filas.length < 2 || filas[0].cells.length < 3) return;
+      const enc = [...filas[0].cells].map(txt);
+      if (!enc.every((x) => x && x.length <= 30 && !/\d/.test(x))) return;
+      tablasColumnas.add(t);
+      for (const fila of filas.slice(1)) {
+        if (fila.cells.length !== enc.length) continue;
+        enc.forEach((e, i) => add(e, txt(fila.cells[i])));
+      }
+    });
     doc.querySelectorAll("tr").forEach((tr) => {
+      if (tablasColumnas.has(tr.closest("table"))) return;
       const c = [...tr.children].filter((x) => x.tagName === "TH" || x.tagName === "TD");
       for (let i = 0; i + 1 < c.length; i += 2) add(txt(c[i]), txt(c[i + 1]));
     });

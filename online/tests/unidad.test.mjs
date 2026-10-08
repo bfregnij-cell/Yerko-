@@ -150,3 +150,20 @@ test("el servidor no descarga desde redes internas", () => {
   }
   for (const ip of ["8.8.8.8", "104.16.1.1", "2606:4700::1"]) assert.equal(esIpPrivada(ip), false, ip);
 });
+
+test("valores reales vistos en IAAI y BE FORWARD", () => {
+  const d = n.normalizar({
+    transmision: "Automatic Transmission", traccion: "4X4 Drive", cilindros: "6 Cylinders",
+    llaves: "Present Present", estado: "Run & Drive Run & Drive",
+  });
+  assert.deepEqual(d, { transmision: "Automática", traccion: "4x4", cilindros: "6", llaves: "Sí", estado: "Arranca y anda" });
+  const t = n.desdeTitulo("Used 2019 MAZDA CX-5 XD PROACTIVE/3DA-KF2P for Sale CE451821 - BE FORWARD");
+  assert.equal(t.marca, "MAZDA");
+  assert.equal(t.modelo, "CX-5");
+  const c = new Captura({ url: "https://www.beforward.jp/mazda/cx-5/ce451821/id/16337108/", h1: "2019 MAZDA",
+    titulo: "Used 2019 MAZDA CX-5 XD PROACTIVE/3DA-KF2P for Sale CE451821 - BE FORWARD",
+    pares: [["Version/Class", "XD PROACTIVE"], ["Mileage", "68,803 km"]] });
+  const datos = ExtractorFactory.paraUrl(c.url).especificaciones(c, n);
+  assert.equal(datos.titulo, "Mazda CX-5 2019");
+  assert.equal(datos.version, "XD Proactive");
+});

@@ -16,7 +16,7 @@ use DOMXPath;
 final class LectorHtml
 {
     private const BLOQUEOS = ['pardon our interruption', 'access denied', 'incapsula', 'request unsuccessful',
-        'are you a robot', 'just a moment', 'attention required', 'verify you are human', '_incapsula_resource'];
+        'are you a robot', 'just a moment', 'javascript is disabled', 'attention required', 'verify you are human', '_incapsula_resource'];
 
     public function esBloqueo(string $html): bool
     {
@@ -60,8 +60,39 @@ final class LectorHtml
             }
         };
 
+        // Tablas con los títulos en una fila y los valores debajo (ej. BE FORWARD)
+        $tablasColumnas = [];
+        foreach ($xp->query('//table') as $tabla) {
+            $filas = [];
+            foreach ($xp->query('./tr|./tbody/tr|./thead/tr', $tabla) as $tr) {
+                $celdas = array_map(fn($c) => $this->texto($c), iterator_to_array($xp->query('./th|./td', $tr)));
+                if (count($celdas) >= 2) {
+                    $filas[] = $celdas;
+                }
+            }
+            if (count($filas) < 2 || count($filas[0]) < 3) {
+                continue;
+            }
+            $enc = $filas[0];
+            if (array_filter($enc, fn($x) => $x === '' || mb_strlen($x) > 30 || preg_match('/\d/', $x))) {
+                continue;
+            }
+            $tablasColumnas[] = $tabla;
+            foreach (array_slice($filas, 1) as $fila) {
+                if (count($fila) === count($enc)) {
+                    foreach ($enc as $i => $e) {
+                        $agregar($e, $fila[$i]);
+                    }
+                }
+            }
+        }
         // Tablas: celdas en pares consecutivos (sirve para 2 y 4 columnas)
         foreach ($xp->query('//tr') as $tr) {
+            $tabla = $tr->parentNode instanceof DOMElement && $tr->parentNode->tagName !== 'table'
+                ? $tr->parentNode->parentNode : $tr->parentNode;
+            if (in_array($tabla, $tablasColumnas, true)) {
+                continue;
+            }
             $celdas = [];
             foreach ($tr->childNodes as $n) {
                 if ($n instanceof DOMElement && in_array($n->tagName, ['th', 'td'], true)) {

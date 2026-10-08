@@ -34,7 +34,7 @@ export class Extractor {
     for (const fuente of [
       this.specsDesdeJson(captura),
       normalizador.desdePares(captura.pares),
-      normalizador.desdeTitulo(captura.tituloPagina()),
+      this.#desdeTitulos(captura, normalizador),
     ]) {
       for (const [campo, valor] of Object.entries(fuente)) crudo[campo] ??= valor;
     }
@@ -44,6 +44,12 @@ export class Extractor {
     datos.fuente = this.nombre();
     datos.link = captura.url;
     return datos;
+  }
+
+  /** Prueba h1, og:title y <title>: usa el primero que trae marca y modelo. */
+  #desdeTitulos(captura, normalizador) {
+    const candidatos = [captura.h1, captura.ogTitulo, captura.titulo].map((t) => normalizador.desdeTitulo(t));
+    return candidatos.find((d) => d.modelo) ?? candidatos.find((d) => d.anio) ?? {};
   }
 
   // ------------------------------------------------------------------ fotos
@@ -85,7 +91,7 @@ export class Extractor {
   }
 
   #carpetaDe(url) {
-    const u = new URL(url);
+    const u = new URL(this.altaResolucion(url));
     return u.host + u.pathname.slice(0, u.pathname.lastIndexOf("/"));
   }
 

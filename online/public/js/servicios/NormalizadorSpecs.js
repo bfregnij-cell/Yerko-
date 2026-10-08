@@ -14,8 +14,8 @@ const SINONIMOS = {
   marca: ["make", "marca", "maker", "manufacturer"],
   modelo: ["model", "modelo"],
   anio: ["year", "model year", "ano", "registration year", "registration year/month",
-    "manufacture year", "manufacture year/month", "reg. year", "reg year"],
-  version: ["series", "trim", "grade", "version", "sub model"],
+    "manufacture year", "manufacture year/month", "reg. year", "reg year", "registrationyear/month"],
+  version: ["series", "trim", "grade", "version", "sub model", "version/class"],
   kilometraje: ["mileage", "odometer", "kilometraje", "km", "odometer reading", "odo"],
   motor: ["engine", "engine type", "engine size", "engine capacity", "displacement", "motor", "cc"],
   cilindros: ["cylinders", "cylinder", "cilindros"],
@@ -41,6 +41,7 @@ const SINONIMOS = {
 const TRADUCCIONES = {
   // transmisión
   automatic: "Automática", auto: "Automática", at: "Automática", manual: "Manual",
+  "automatic transmission": "Automática", "manual transmission": "Manual", "cvt transmission": "Automática CVT",
   mt: "Manual", cvt: "Automática CVT", "semi-automatic": "Semiautomática",
   // combustible
   gas: "Bencina", gasoline: "Bencina", petrol: "Bencina", diesel: "Diésel",
@@ -53,7 +54,8 @@ const TRADUCCIONES = {
   "rear-wheel drive": "Trasera (RWD)", "rear wheel drive": "Trasera (RWD)", rwd: "Trasera (RWD)",
   "all wheel drive": "Integral (AWD)", "all-wheel drive": "Integral (AWD)", awd: "Integral (AWD)",
   "4x4 w/front whl drv": "4x4", "4x4 w/rear wheel drv": "4x4", "4x4": "4x4", "4wd": "4x4",
-  "four by four": "4x4",
+  "four by four": "4x4", "4x4 drive": "4x4", "4wd drive": "4x4", "awd drive": "Integral (AWD)",
+  "front wheel drive (fwd)": "Delantera (FWD)", "rear wheel drive (rwd)": "Trasera (RWD)", "all wheel drive (awd)": "Integral (AWD)",
   // colores
   black: "Negro", white: "Blanco", silver: "Plateado", gray: "Gris", grey: "Gris",
   red: "Rojo", blue: "Azul", green: "Verde", gold: "Dorado", beige: "Beige",
@@ -80,7 +82,7 @@ const TRADUCCIONES = {
   // estado
   "run and drive": "Arranca y anda", "run & drive": "Arranca y anda", "runs and drives": "Arranca y anda",
   "engine start program": "Motor enciende", starts: "Enciende", stationary: "Enciende (no se movió)",
-  "won't start": "No arranca", "does not start": "No arranca", "enhanced vehicles": "Vehículo mejorado",
+  "won't start": "No arranca", "does not start": "No arranca",
   // carrocería
   "sedan 4d": "Sedán 4 puertas", "sedan 2d": "Sedán 2 puertas", sedan: "Sedán",
   "4dr spor": "SUV", "sport utility": "SUV", suv: "SUV", "suv 4d": "SUV",
@@ -131,7 +133,7 @@ export class NormalizadorSpecs {
   desdeTitulo(titulo) {
     const m = /\b((?:19|20)\d{2})\s+([A-Za-z][\w-]*)\s+(.+)/u.exec(titulo ?? "");
     if (!m) return {};
-    const resto = m[3].split("|")[0].split(" - ")[0].trim();
+    const resto = m[3].split(/\s+for sale\b|\||\s-\s/i)[0].trim();
     const palabras = resto.split(/\s+/).filter(Boolean);
     const datos = { anio: m[1], marca: m[2] };
     if (palabras.length) {
@@ -148,6 +150,7 @@ export class NormalizadorSpecs {
       if (!v || VACIOS.has(v.toLowerCase())) continue;
       if (campo === "kilometraje") v = this.formatearKilometraje(v);
       else if (campo === "motor") v = this.formatearMotor(v);
+      else if (campo === "cilindros") v = /(\d+)\s*cyl/i.exec(v)?.[1] ?? v;
       else if (campo === "anio") {
         const m = /(19|20)\d{2}/.exec(v);
         if (!m) continue;
@@ -215,7 +218,10 @@ export class NormalizadorSpecs {
   }
 
   #limpiarValor(v) {
-    return String(v ?? "").replace(/\s+/g, " ").replace(/^[\s:|]+|[\s:|]+$/g, "");
+    const t = String(v ?? "").replace(/\s+/g, " ").replace(/^[\s:|]+|[\s:|]+$/g, "");
+    // "Present Present" (el sitio repite el dato para móvil y escritorio)
+    const mitad = (t.length - 1) / 2;
+    return Number.isInteger(mitad) && t[mitad] === " " && t.slice(0, mitad) === t.slice(mitad + 1) ? t.slice(0, mitad) : t;
   }
 
   /** 'MAZDA CX-5 GRAND TOURING' -> 'Mazda CX-5 Grand Touring' (respeta siglas y códigos). */
