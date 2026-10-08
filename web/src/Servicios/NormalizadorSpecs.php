@@ -68,7 +68,7 @@ final class NormalizadorSpecs
         'red' => 'Rojo', 'blue' => 'Azul', 'green' => 'Verde', 'gold' => 'Dorado', 'beige' => 'Beige',
         'brown' => 'Café', 'orange' => 'Naranjo', 'yellow' => 'Amarillo', 'purple' => 'Morado',
         'maroon' => 'Burdeo', 'burgundy' => 'Burdeo', 'pearl' => 'Perla', 'charcoal' => 'Gris oscuro',
-        'tan' => 'Beige', 'pink' => 'Rosado', 'turquoise' => 'Turquesa', 'teal' => 'Verde azulado',
+        'tan' => 'Beige', 'bronze' => 'Bronce', 'dark blue' => 'Azul oscuro', 'light blue' => 'Celeste', 'pink' => 'Rosado', 'turquoise' => 'Turquesa', 'teal' => 'Verde azulado',
         // daños
         'front end' => 'Parte delantera', 'rear end' => 'Parte trasera', 'side' => 'Lateral',
         'left side' => 'Lateral izquierdo', 'right side' => 'Lateral derecho',
@@ -84,7 +84,7 @@ final class NormalizadorSpecs
         'rejected repair' => 'Reparación rechazada', 'replaced vin' => 'VIN reemplazado',
         'damage history' => 'Historial de daños', 'partial repair' => 'Reparación parcial',
         'missing/altered vin' => 'VIN faltante/alterado', 'electrical' => 'Eléctrico',
-        'collision' => 'Colisión', 'theft' => 'Robo', 'none' => 'Ninguno', 'unknown' => 'Desconocido',
+        'collision' => 'Colisión', 'other' => 'Otro', 'theft' => 'Robo', 'none' => 'Ninguno', 'unknown' => 'Desconocido',
         'suspension' => 'Suspensión', 'cosmetic' => 'Estético', 'repossession' => 'Embargo',
         // estado
         'run and drive' => 'Arranca y anda', 'run & drive' => 'Arranca y anda', 'runs and drives' => 'Arranca y anda',
@@ -97,7 +97,7 @@ final class NormalizadorSpecs
         'coupe' => 'Coupé', 'coupe 2d' => 'Coupé', 'convertible' => 'Convertible', 'conv' => 'Convertible',
         'wagon' => 'Station wagon', 'station wagon' => 'Station wagon', 'wagon 4d' => 'Station wagon',
         'pickup' => 'Camioneta (pickup)', 'crew pic' => 'Camioneta doble cabina', 'crew cab' => 'Camioneta doble cabina',
-        'extended' => 'Camioneta cabina extendida', 'minivan' => 'Minivan', 'van' => 'Furgón', 'truck' => 'Camión',
+        'extended' => 'Camioneta cabina extendida', 'minivan' => 'Minivan', 'van' => 'Furgón', 'cargo van' => 'Furgón de carga', 'passenger van' => 'Furgón de pasajeros', 'truck' => 'Camión',
         'mini vehicle' => 'Mini vehículo', 'motorcycle' => 'Motocicleta',
         // varios
         'yes' => 'Sí', 'no' => 'No', 'present' => 'Sí', 'missing' => 'No',
