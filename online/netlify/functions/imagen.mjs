@@ -14,8 +14,11 @@ export default async (req) => {
     const cabeceras = /^https?:\/\//i.test(referer) ? { Referer: referer } : {};
     const { respuesta } = await obtener(u, { cabeceras, tiempo: 15000 });
     const tipo = (respuesta.headers.get("content-type") ?? "").toLowerCase();
+    if (respuesta.status >= 500) {
+      return new Response(`El sitio respondió con error (código ${respuesta.status}).`, { status: 502 });
+    }
     if (!respuesta.ok || !tipo.startsWith("image/")) {
-      return new Response(`No es una imagen (código ${respuesta.status}).`, { status: 502 });
+      return new Response(`No es una imagen (código ${respuesta.status}).`, { status: 404 });
     }
     const cuerpo = await leerConLimite(respuesta, MAX_BYTES);
     return new Response(cuerpo, {

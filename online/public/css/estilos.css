@@ -132,3 +132,8 @@ kbd { border: 1px solid var(--borde); border-radius: 4px; padding: 1px 6px; font
 
 [hidden] { display: none !important; }
 .galeria-remota img { opacity: 0.85; }
+
+.acciones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 0 16px; }
+.boton-grande { font-size: 18px; padding: 14px 24px; background: var(--verde); }
+.boton-grande:hover { background: #17834a; }
+.boton:disabled { opacity: 0.75; cursor: progress; }

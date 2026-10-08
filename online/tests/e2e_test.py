@@ -15,6 +15,7 @@ import socket
 import subprocess
 import time
 import urllib.parse
+import zipfile
 
 import pytest
 from playwright.sync_api import sync_playwright
@@ -80,11 +81,19 @@ def _verificar_resultado(page):
     # 3 fotos: sin el logo ni la miniatura repetida
     page.wait_for_function("document.querySelector('#cantidad').textContent === '3'", timeout=30000)
     assert page.locator("#galeria img").count() == 3
+    page.wait_for_selector("#zip:not([disabled])", timeout=30000)
+    assert "3 fotos" in page.inner_text("#zip")
     with page.expect_download() as descarga:
         page.click("#zip")
-    ruta = descarga.value.path()
-    with open(ruta, "rb") as f:
-        assert f.read(2) == b"PK"
+    assert descarga.value.suggested_filename == "Mazda CX-5 2019.zip"
+    with zipfile.ZipFile(descarga.value.path()) as z:
+        assert sorted(n for n in z.namelist() if not n.endswith("/")) == [
+            "Mazda CX-5 2019/Mazda CX-5 2019 - 01.jpg",
+            "Mazda CX-5 2019/Mazda CX-5 2019 - 02.jpg",
+            "Mazda CX-5 2019/Mazda CX-5 2019 - 03.jpg",
+            "Mazda CX-5 2019/publicacion.txt",
+        ]
+        assert "🚗 Mazda CX-5 2019" in z.read("Mazda CX-5 2019/publicacion.txt").decode("utf-8")
 
 
 def test_pegar_link(servidores, navegador):

@@ -67,30 +67,66 @@ export class ResultadoController {
     this.$("#resultado").hidden = false;
 
     const candidatas = extractor.candidatas(captura);
-    this.$("#estado-fotos").textContent = candidatas.length
-      ? `Descargando ${candidatas.length} fotos…`
-      : "No se encontraron fotos en la página.";
-    const { fotos, fallidas } = await new DescargadorFotos().descargar(candidatas, captura.url, (f) =>
-      this.#agregarFoto(f)
-    );
+    const zip = this.$("#zip");
+    if (!candidatas.length) {
+      this.$("#estado-fotos").textContent = "No se encontraron fotos en la página.";
+      zip.hidden = true;
+      return;
+    }
+    zip.disabled = true;
+    zip.textContent = `⏳ Preparando fotos 0/${candidatas.length}…`;
+
+    const { fotos, fallidas } = await new DescargadorFotos().descargar(candidatas, captura.url, {
+      alGuardar: (f) => this.#agregarFoto(f),
+      alAvanzar: (hechas, total) => (zip.textContent = `⏳ Preparando fotos ${hechas}/${total}…`),
+    });
     this.fotos = fotos;
+    this.#ordenarGaleria();
     this.$("#cantidad").textContent = String(fotos.length);
-    this.$("#estado-fotos").textContent = fotos.length ? "" : "No se pudieron descargar fotos.";
-    this.$("#zip").hidden = fotos.length === 0;
+    if (fotos.length) {
+      zip.disabled = false;
+      zip.textContent = `⬇️ Descargar todo en ZIP (${fotos.length} fotos + texto)`;
+      this.$("#estado-fotos").textContent = "Toca una foto para descargarla sola.";
+    } else {
+      zip.hidden = true;
+      this.$("#estado-fotos").textContent = "No se pudieron descargar fotos.";
+    }
     if (fallidas.length) this.#mostrarRemotas(fallidas);
   }
 
+  /** Nombre base para los archivos: "Mazda CX-5 2019" */
+  #nombreBase() {
+    return this.titulo.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, " ").trim().slice(0, 80) || "auto";
+  }
+
+  #nombreFoto(n, foto) {
+    return `${this.#nombreBase()} - ${String(n).padStart(2, "0")}.${foto.extension}`;
+  }
+
   #agregarFoto(foto) {
-    const n = this.$("#galeria").children.length + 1;
     const a = this.doc.createElement("a");
     a.href = foto.url;
-    a.download = `foto_${String(n).padStart(2, "0")}.${foto.extension}`;
-    a.title = "Descargar";
+    a.title = "Descargar esta foto";
+    a.dataset.orden = String(foto.orden);
     const img = this.doc.createElement("img");
     img.src = foto.url;
-    img.alt = a.download;
+    img.alt = "";
     a.append(img);
     this.$("#galeria").append(a);
+  }
+
+  /** Al terminar, deja la galería en el orden de la página y numera las fotos. */
+  #ordenarGaleria() {
+    const galeria = this.$("#galeria");
+    const porOrden = new Map([...galeria.children].map((a) => [a.dataset.orden, a]));
+    galeria.replaceChildren();
+    this.fotos.forEach((foto, i) => {
+      const a = porOrden.get(String(foto.orden));
+      if (!a) return;
+      a.download = this.#nombreFoto(i + 1, foto);
+      a.querySelector("img").alt = a.download;
+      galeria.append(a);
+    });
   }
 
   #mostrarRemotas(urls) {
@@ -112,18 +148,26 @@ export class ResultadoController {
 
   async descargarZip() {
     const boton = this.$("#zip");
+    const texto = boton.textContent;
     boton.disabled = true;
-    boton.textContent = "Armando ZIP…";
-    const zip = new window.JSZip();
-    this.fotos.forEach((f, i) => zip.file(`foto_${String(i + 1).padStart(2, "0")}.${f.extension}`, f.blob));
-    zip.file("publicacion.txt", this.$("#texto").value);
-    const blob = await zip.generateAsync({ type: "blob" });
-    const a = this.doc.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `${this.titulo.replace(/[^\w -]/g, "") || "auto"} - fotos.zip`;
-    a.click();
-    boton.disabled = false;
-    boton.textContent = "⬇️ Descargar todas (ZIP)";
+    boton.textContent = "⏳ Armando ZIP…";
+    try {
+      const zip = new window.JSZip();
+      const carpeta = zip.folder(this.#nombreBase());
+      this.fotos.forEach((f, i) => carpeta.file(this.#nombreFoto(i + 1, f), f.blob));
+      carpeta.file("publicacion.txt", this.$("#texto").value);
+      const blob = await zip.generateAsync({ type: "blob" });
+      const a = this.doc.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${this.#nombreBase()}.zip`;
+      this.doc.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    } finally {
+      boton.disabled = false;
+      boton.textContent = texto;
+    }
   }
 
   #tabla(tabla, filas) {

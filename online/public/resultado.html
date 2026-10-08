@@ -35,6 +35,10 @@
       <h1 id="titulo"></h1>
       <p class="nota"><span id="fuente"></span> ·
         <a id="original" target="_blank" rel="noopener noreferrer">ver página original</a></p>
+      <div class="acciones">
+        <button id="zip" class="boton boton-grande" type="button" disabled>⏳ Preparando fotos…</button>
+        <button class="boton secundario" type="button" data-copiar="#texto">📋 Copiar texto</button>
+      </div>
 
       <div class="columnas">
         <section class="tarjeta">
@@ -50,7 +54,6 @@
         <section class="tarjeta">
           <h2>Fotos (<span id="cantidad">…</span>)</h2>
           <p id="estado-fotos" class="nota"></p>
-          <button id="zip" class="boton" type="button" hidden>⬇️ Descargar todas (ZIP)</button>
           <div id="galeria" class="galeria"></div>
           <details id="remotas" hidden>
             <summary><span id="remotas-cantidad"></span> fotos no se pudieron descargar desde el servidor</summary>
