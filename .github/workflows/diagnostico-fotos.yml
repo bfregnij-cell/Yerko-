@@ -1,0 +1,24 @@
+name: Diagnóstico de descarga de fotos
+
+on:
+  workflow_dispatch:
+    inputs:
+      foto:
+        description: "URL de una foto"
+        default: "https://image-cdn.beforward.jp/large/202608/16337108/CE451821_58c193.JPG"
+
+jobs:
+  fotos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probar la foto por el sitio publicado y directo
+        env:
+          FOTO: ${{ inputs.foto }}
+        run: |
+          set +e
+          enc=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['FOTO'], safe=''))")
+          echo "=== Por el sitio publicado (/api/imagen) ==="
+          curl -s -o /tmp/r.bin -w "estado=%{http_code} tipo=%{content_type} bytes=%{size_download}\n" "https://extractor-autos.netlify.app/api/imagen?u=$enc&r=https%3A%2F%2Fwww.beforward.jp%2F"
+          head -c 300 /tmp/r.bin | strings | head -5
+          echo "=== Directo desde GitHub, con Origin (¿permite CORS?) ==="
+          curl -s -D - -o /dev/null -H "Origin: https://extractor-autos.netlify.app" -H "Referer: https://www.beforward.jp/" "$FOTO" | grep -iE "^HTTP|access-control|content-type|content-length|server|cf-"
