@@ -47,7 +47,7 @@ if ($ruta === '/auto') {
   <tr><th>Mileage</th><td>32,000 km</td><th>Transmission</th><td>Automatic</td></tr>
   <tr><th>Fuel</th><td>Gasoline</td><th>Exterior Color</th><td>Red</td></tr>
 </table>
-<ul><li><span>Engine:</span><span>2.5L 4</span></li><li>Drive: AWD</li></ul>
+<ul><li><span>Engine:</span><span>2.5L 4</span></li><li>Drive: AWD</li><li>Stock #: 12543</li></ul>
 <script>document.querySelectorAll('img.lazy').forEach(function (i) { i.src = i.dataset.src; });</script>
 </body></html>
 HTML;

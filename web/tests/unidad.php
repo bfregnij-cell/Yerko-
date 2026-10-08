@@ -260,6 +260,15 @@ prueba('valores reales vistos en IAAI y BE FORWARD', function () use ($n) {
     igual('XD Proactive', $d['version']);
 });
 
+prueba('nombre único del ZIP', function () {
+    $v = new App\Modelos\Vehiculo(id: 'abcdef0123456789', sitio: 'beforward', url: 'https://www.beforward.jp/es/mazda/cx-5/cf116428/id/16962337/',
+        datos: ['marca' => 'Mazda', 'modelo' => 'CX-5', 'anio' => '2022', 'color' => 'Negro', 'referencia' => 'CF116428']);
+    igual('Mazda CX-5 2022 Negro COD CF116428', $v->nombreArchivo());
+    $v = new App\Modelos\Vehiculo(id: 'abcdef0123456789', sitio: 'iaai', url: 'https://www.iaai.com/VehicleDetail/46657071~US',
+        datos: ['marca' => 'Ford', 'modelo' => 'Escape', 'anio' => '2015']);
+    igual('Ford Escape 2015 COD 46657071', $v->nombreArchivo());
+});
+
 prueba('el servidor no descarga desde redes internas', function () {
     foreach (['http://127.0.0.1/', 'http://localhost:8080/', 'http://192.168.1.1/', 'http://169.254.169.254/latest/meta-data/', 'file:///etc/passwd'] as $u) {
         try {

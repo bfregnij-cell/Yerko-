@@ -191,3 +191,15 @@ test("reconoce fotos por su contenido aunque el sitio no diga que son imágenes"
   assert.equal(tipoDeImagen(new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0])), "image/png");
   assert.equal(tipoDeImagen(new TextEncoder().encode("<html><body>no</body></html>")), null);
 });
+
+test("nombre único del ZIP: marca, modelo, año, color y código", async () => {
+  const { ResultadoController } = await import("../public/js/controladores/ResultadoController.js");
+  const n1 = ResultadoController.nombreUnico(
+    { marca: "Mazda", modelo: "CX-5", anio: "2022", color: "Negro", referencia: "CF116428" },
+    "https://www.beforward.jp/es/mazda/cx-5/cf116428/id/16962337/");
+  assert.equal(n1, "Mazda CX-5 2022 Negro COD CF116428");
+  // sin referencia: usa el número del link
+  const n2 = ResultadoController.nombreUnico({ marca: "Ford", modelo: "Escape", anio: "2015" },
+    "https://www.iaai.com/VehicleDetail/46657071~US");
+  assert.equal(n2, "Ford Escape 2015 COD 46657071");
+});

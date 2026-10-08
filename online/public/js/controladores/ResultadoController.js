@@ -55,10 +55,11 @@ export class ResultadoController {
     const datos = extractor.especificaciones(captura, new NormalizadorSpecs());
     const texto = new GeneradorPublicacion(RepositorioPlantilla.leer()).generar(datos);
     this.titulo = datos.titulo || "auto";
+    this.nombreArchivo = ResultadoController.nombreUnico(datos, captura.url);
 
     document.title = `${this.titulo} · Extractor de Autos`;
     this.$("#titulo").textContent = this.titulo;
-    this.$("#fuente").textContent = `Fuente: ${datos.fuente}`;
+    this.$("#fuente").textContent = `Fuente: ${datos.fuente} · Archivo: ${this.nombreArchivo}`;
     this.$("#original").href = captura.url;
     this.$("#texto").value = texto;
     this.#tabla(this.$("#tabla-datos"), Object.entries(datos));
@@ -94,9 +95,31 @@ export class ResultadoController {
     if (fallidas.length) this.#mostrarRemotas(fallidas);
   }
 
-  /** Nombre base para los archivos: "Mazda CX-5 2019" */
+  /**
+   * Nombre único para el ZIP y las fotos: "Mazda CX-5 2022 Negro COD CF116428".
+   * El código es la referencia del sitio (Ref No, lote, stock); si no hay, el número del link.
+   */
+  static nombreUnico(datos, url) {
+    const codigo =
+      (datos.referencia ?? "").replace(/[^\w-]/g, "") ||
+      (ResultadoController.#ruta(url).match(/\d{5,}/g) ?? []).pop() ||
+      [...url].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7).toString(36).toUpperCase();
+    const partes = [datos.marca, datos.modelo, datos.anio, datos.color]
+      .filter(Boolean)
+      .join(" ") || datos.titulo || "Auto";
+    return `${partes} COD ${codigo}`.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, " ").trim().slice(0, 100);
+  }
+
+  static #ruta(url) {
+    try {
+      return new URL(url).pathname;
+    } catch {
+      return "";
+    }
+  }
+
   #nombreBase() {
-    return this.titulo.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, " ").trim().slice(0, 80) || "auto";
+    return this.nombreArchivo || "Auto";
   }
 
   #nombreFoto(n, foto) {

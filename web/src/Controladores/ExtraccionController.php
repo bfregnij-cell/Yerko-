@@ -161,10 +161,11 @@ final class ExtraccionController extends Controlador
             return;
         }
         $ruta = $repositorio->crearZip($vehiculo);
-        $nombre = preg_replace('/[^A-Za-z0-9 _-]/', '', $vehiculo->titulo()) ?: 'auto';
+        $nombre = $vehiculo->nombreArchivo();
+        $ascii = preg_replace('/[^A-Za-z0-9 _-]/', '', $nombre) ?: 'auto';
         header('Content-Type: application/zip');
         header('Content-Length: ' . filesize($ruta));
-        header('Content-Disposition: attachment; filename="' . $nombre . ' - fotos.zip"');
+        header("Content-Disposition: attachment; filename=\"{$ascii}.zip\"; filename*=UTF-8''" . rawurlencode($nombre . '.zip'));
         readfile($ruta);
     }
 

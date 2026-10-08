@@ -85,15 +85,15 @@ def _verificar_resultado(page):
     assert "3 fotos" in page.inner_text("#zip")
     with page.expect_download() as descarga:
         page.click("#zip")
-    assert descarga.value.suggested_filename == "Mazda CX-5 2019.zip"
+    assert descarga.value.suggested_filename == "Mazda CX-5 2019 Rojo COD 12543.zip"
     with zipfile.ZipFile(descarga.value.path()) as z:
         assert sorted(n for n in z.namelist() if not n.endswith("/")) == [
-            "Mazda CX-5 2019/Mazda CX-5 2019 - 01.jpg",
-            "Mazda CX-5 2019/Mazda CX-5 2019 - 02.jpg",
-            "Mazda CX-5 2019/Mazda CX-5 2019 - 03.jpg",
-            "Mazda CX-5 2019/publicacion.txt",
+            "Mazda CX-5 2019 Rojo COD 12543/Mazda CX-5 2019 Rojo COD 12543 - 01.jpg",
+            "Mazda CX-5 2019 Rojo COD 12543/Mazda CX-5 2019 Rojo COD 12543 - 02.jpg",
+            "Mazda CX-5 2019 Rojo COD 12543/Mazda CX-5 2019 Rojo COD 12543 - 03.jpg",
+            "Mazda CX-5 2019 Rojo COD 12543/publicacion.txt",
         ]
-        assert "🚗 Mazda CX-5 2019" in z.read("Mazda CX-5 2019/publicacion.txt").decode("utf-8")
+        assert "🚗 Mazda CX-5 2019" in z.read("Mazda CX-5 2019 Rojo COD 12543/publicacion.txt").decode("utf-8")
 
 
 def test_pegar_link(servidores, navegador):

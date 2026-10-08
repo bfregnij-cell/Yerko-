@@ -43,6 +43,23 @@ final class Vehiculo
         return $this->datos['titulo'] ?? 'Auto';
     }
 
+    /** Nombre único para el ZIP: "Mazda CX-5 2022 Negro COD CF116428". */
+    public function nombreArchivo(): string
+    {
+        $codigo = preg_replace('/[^\w-]/', '', $this->datos['referencia'] ?? '');
+        if ($codigo === '' && preg_match_all('/\d{5,}/', (string) parse_url($this->url, PHP_URL_PATH), $m)) {
+            $codigo = end($m[0]);
+        }
+        if ($codigo === '') {
+            $codigo = strtoupper(substr($this->id, 0, 8));
+        }
+        $partes = trim(implode(' ', array_filter([
+            $this->datos['marca'] ?? '', $this->datos['modelo'] ?? '', $this->datos['anio'] ?? '', $this->datos['color'] ?? '',
+        ]))) ?: $this->titulo();
+        $nombre = preg_replace('#[\\\\/:*?"<>|]+#', '', $partes . ' COD ' . $codigo);
+        return mb_substr(trim((string) preg_replace('/\s+/', ' ', $nombre)), 0, 100);
+    }
+
     public function aArreglo(): array
     {
         return [
