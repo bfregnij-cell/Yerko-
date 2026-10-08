@@ -1,0 +1,38 @@
+name: Diagnóstico de un resultado guardado
+
+on:
+  workflow_dispatch:
+    inputs:
+      id:
+        description: "id del resultado (resultado.html?id=...)"
+        required: true
+
+jobs:
+  captura:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Revisar las fotos del resultado
+        env:
+          ID: ${{ inputs.id }}
+        shell: python
+        run: |
+          import json, os, re, urllib.parse, urllib.request
+          APP = "https://extractor-autos.netlify.app"
+          d = json.load(urllib.request.urlopen(f"{APP}/api/captura?id={os.environ['ID']}"))
+          print("URL:", d.get("url"))
+          print("TITULO:", d.get("titulo"), "| H1:", d.get("h1"))
+          imgs = d.get("imagenes", [])
+          print("IMAGENES:", len(imgs))
+          for u in imgs[:120]:
+              print("  ", u[:200])
+          print("PARES (primeros 40):")
+          for p in d.get("pares", [])[:40]:
+              print("  ", p)
+          prueba = [u for u in imgs if "image-cdn" in u or "/large/" in u][:6]
+          for u in prueba:
+              q = f"{APP}/api/imagen?u={urllib.parse.quote(u, safe='')}&r={urllib.parse.quote(d.get('url',''), safe='')}"
+              try:
+                  r = urllib.request.urlopen(q)
+                  print("PROXY OK", r.status, r.headers.get("content-type"), len(r.read()), u[:120])
+              except urllib.error.HTTPError as e:
+                  print("PROXY FALLA", e.code, e.read()[:200], u[:120])
