@@ -9,6 +9,7 @@ modo "pegar el link". Guarda capturas de pantalla en verificacion/.
 
 import json
 import os
+os.set_blocking(1, True)
 import re
 import sys
 import urllib.parse
@@ -52,7 +53,12 @@ def leer_resultado(page, nombre):
         img.thumbnail((1100, 1100))
         b = io.BytesIO()
         img.save(b, "JPEG", quality=60)
-        print(f"CAPTURA:{nombre}:{base64.b64encode(b.getvalue()).decode()}", flush=True)
+        datos = base64.b64encode(b.getvalue()).decode()
+        try:
+            for i in range(0, len(datos), 2000):
+                print(f"CAPTURA:{nombre}:{datos[i:i + 2000]}", flush=True)
+        except BlockingIOError:
+            pass
     filas = page.eval_on_selector_all(
         "#tabla-datos tr", "rs => rs.map(r => [r.cells[0].textContent, r.cells[1] ? r.cells[1].textContent : ''])")
     pares = page.eval_on_selector_all("#tabla-pares tr", "rs => rs.length")
